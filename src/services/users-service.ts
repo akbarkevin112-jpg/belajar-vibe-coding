@@ -80,19 +80,8 @@ export const getCurrentUser = async (token: string) => {
 };
 
 export const logoutUser = async (token: string) => {
-  // 1. Cari Session
-  const [session] = await db
-    .select()
-    .from(sessions)
-    .where(eq(sessions.token, token));
-
-  // 2. Validasi
-  if (!session) {
-    throw new Error("Unauthorized");
-  }
-
-  // 3. Delete Session
-  await db.delete(sessions).where(eq(sessions.token, token));
-
+  // Langsung delete session. Jika token tidak ada, delete tidak akan melakukan apa-apa (idempotent).
+  const result = await db.delete(sessions).where(eq(sessions.token, token));
+  
   return "OK";
 };
