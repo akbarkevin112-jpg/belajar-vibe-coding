@@ -15,6 +15,13 @@
       "when": 1777946137346,
       "tag": "0001_closed_solo",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1777947589154,
+      "tag": "0002_high_jocasta",
+      "breakpoints": true
     }
   ]
 }
