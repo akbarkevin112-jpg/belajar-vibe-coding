@@ -78,3 +78,21 @@ export const getCurrentUser = async (token: string) => {
 
   return result;
 };
+
+export const logoutUser = async (token: string) => {
+  // 1. Cari Session
+  const [session] = await db
+    .select()
+    .from(sessions)
+    .where(eq(sessions.token, token));
+
+  // 2. Validasi
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+
+  // 3. Delete Session
+  await db.delete(sessions).where(eq(sessions.token, token));
+
+  return "OK";
+};
