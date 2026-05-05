@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1777942568109,
+      "tag": "0000_icy_tarot",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1777946137346,
+      "tag": "0001_closed_solo",
+      "breakpoints": true
+    }
+  ]
+}

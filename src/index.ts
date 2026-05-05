@@ -1,6 +1,6 @@
 import { Elysia } from "elysia";
 import { env } from "./config/env";
-import { userRoutes } from "./routes/users";
+import { userRoutes } from "./routes/users-route";
 
 const app = new Elysia()
   .use(userRoutes)
