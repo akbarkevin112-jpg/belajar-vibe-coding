@@ -78,3 +78,10 @@ export const getCurrentUser = async (token: string) => {
 
   return result;
 };
+
+export const logoutUser = async (token: string) => {
+  // Langsung delete session. Jika token tidak ada, delete tidak akan melakukan apa-apa (idempotent).
+  const result = await db.delete(sessions).where(eq(sessions.token, token));
+  
+  return "OK";
+};

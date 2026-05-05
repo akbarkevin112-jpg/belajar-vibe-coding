@@ -1,7 +1,13 @@
 import { Elysia, t } from "elysia";
-import { registerUser, loginUser, getCurrentUser } from "../services/users-service";
+import { registerUser, loginUser, getCurrentUser, logoutUser } from "../services/users-service";
 
 export const userRoutes = new Elysia({ prefix: "/api/users" })
+  // Middleware untuk ekstraksi token (DRY)
+  .derive(({ headers }) => {
+    const authHeader = headers["authorization"];
+    const token = authHeader?.startsWith("Bearer ") ? authHeader.split(" ")[1] : null;
+    return { token };
+  })
   .post(
     "/",
     async ({ body, set }) => {
@@ -48,17 +54,33 @@ export const userRoutes = new Elysia({ prefix: "/api/users" })
       }),
     }
   )
-  .get("/current", async ({ headers, set }) => {
+  .get("/current", async ({ token, set }) => {
     try {
-      const authHeader = headers["authorization"];
-      if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      if (!token) {
         set.status = 401;
         return { Error: "Unauthorized" };
       }
 
-      const token = authHeader.replace("Bearer ", "");
       const user = await getCurrentUser(token);
       return { data: user };
+    } catch (error: any) {
+      if (error.message === "Unauthorized") {
+        set.status = 401;
+        return { Error: "Unauthorized" };
+      }
+      set.status = 500;
+      return { Error: "Internal Server Error" };
+    }
+  })
+  .delete("/logout", async ({ token, set }) => {
+    try {
+      if (!token) {
+        set.status = 401;
+        return { Error: "Unauthorized" };
+      }
+
+      await logoutUser(token);
+      return { data: "OK" };
     } catch (error: any) {
       if (error.message === "Unauthorized") {
         set.status = 401;
