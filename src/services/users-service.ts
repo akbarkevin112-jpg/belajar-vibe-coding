@@ -3,6 +3,16 @@ import { users, sessions } from "../db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
+/**
+ * Mendaftarkan pengguna baru ke dalam database.
+ * Melakukan pengecekan email duplikat, hashing password, lalu menyimpan data pengguna.
+ * 
+ * @param name - Nama pengguna
+ * @param email - Alamat email pengguna
+ * @param password - Kata sandi pengguna
+ * @returns String "OK" jika registrasi berhasil
+ * @throws Error jika email sudah terdaftar
+ */
 export const registerUser = async (name: string, email: string, password: string) => {
   // 1. Cek duplikat email
   const [existingUser] = await db
@@ -29,6 +39,15 @@ export const registerUser = async (name: string, email: string, password: string
   return "OK";
 };
 
+/**
+ * Melakukan proses login pengguna.
+ * Memvalidasi kredensial pengguna, menghasilkan token sesi, dan menyimpannya di database.
+ * 
+ * @param email - Alamat email pengguna
+ * @param password - Kata sandi pengguna
+ * @returns Token sesi (UUID) yang dihasilkan jika login berhasil
+ * @throws Error jika email atau kata sandi tidak cocok
+ */
 export const loginUser = async (email: string, password: string) => {
   // 1. Cari User
   const [user] = await db
@@ -60,6 +79,13 @@ export const loginUser = async (email: string, password: string) => {
   return token;
 };
 
+/**
+ * Mengambil informasi pengguna yang saat ini sedang login berdasarkan token sesi.
+ * 
+ * @param token - Token sesi pengguna
+ * @returns Objek berisi id, nama, email, dan waktu pembuatan akun pengguna
+ * @throws Error jika token tidak valid atau tidak ditemukan (Unauthorized)
+ */
 export const getCurrentUser = async (token: string) => {
   const [result] = await db
     .select({
@@ -79,6 +105,12 @@ export const getCurrentUser = async (token: string) => {
   return result;
 };
 
+/**
+ * Mengeluarkan pengguna (logout) dengan cara menghapus token sesi mereka dari database.
+ * 
+ * @param token - Token sesi yang akan dihapus
+ * @returns String "OK" jika penghapusan berhasil dilakukan
+ */
 export const logoutUser = async (token: string) => {
   // Langsung delete session. Jika token tidak ada, delete tidak akan melakukan apa-apa (idempotent).
   const result = await db.delete(sessions).where(eq(sessions.token, token));
