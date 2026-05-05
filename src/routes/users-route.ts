@@ -30,6 +30,22 @@ export const userRoutes = new Elysia({ prefix: "/api/users" })
         email: t.String({ format: "email", maxLength: 255 }),
         password: t.String({ minLength: 8, maxLength: 255 }),
       }),
+      response: {
+        201: t.Object({
+          data: t.String(),
+        }),
+        400: t.Object({
+          Error: t.String(),
+        }),
+        500: t.Object({
+          Error: t.String(),
+        }),
+      },
+      detail: {
+        summary: "Register pengguna baru",
+        description: "Mendaftarkan pengguna baru ke sistem dan menyimpannya ke database.",
+        tags: ["Users"],
+      },
     }
   )
   .post(
@@ -52,6 +68,22 @@ export const userRoutes = new Elysia({ prefix: "/api/users" })
         email: t.String({ format: "email", maxLength: 255 }),
         password: t.String({ maxLength: 255 }),
       }),
+      response: {
+        200: t.Object({
+          data: t.String(),
+        }),
+        401: t.Object({
+          Error: t.String(),
+        }),
+        500: t.Object({
+          Error: t.String(),
+        }),
+      },
+      detail: {
+        summary: "Login pengguna",
+        description: "Melakukan login pengguna dan mengembalikan token sesi.",
+        tags: ["Users"],
+      },
     }
   )
   .get("/current", async ({ token, set }) => {
@@ -71,6 +103,28 @@ export const userRoutes = new Elysia({ prefix: "/api/users" })
       set.status = 500;
       return { Error: "Internal Server Error" };
     }
+  }, {
+    response: {
+      200: t.Object({
+        data: t.Object({
+          id: t.Number(),
+          name: t.String(),
+          email: t.String(),
+          createdAt: t.Date(),
+        }),
+      }),
+      401: t.Object({
+        Error: t.String(),
+      }),
+      500: t.Object({
+        Error: t.String(),
+      }),
+    },
+    detail: {
+      summary: "Dapatkan profil pengguna",
+      description: "Mengambil data pengguna yang saat ini sedang login berdasarkan token sesi.",
+      tags: ["Users"],
+    },
   })
   .delete("/logout", async ({ token, set }) => {
     try {
@@ -89,4 +143,21 @@ export const userRoutes = new Elysia({ prefix: "/api/users" })
       set.status = 500;
       return { Error: "Internal Server Error" };
     }
+  }, {
+    response: {
+      200: t.Object({
+        data: t.String(),
+      }),
+      401: t.Object({
+        Error: t.String(),
+      }),
+      500: t.Object({
+        Error: t.String(),
+      }),
+    },
+    detail: {
+      summary: "Logout pengguna",
+      description: "Menghapus sesi pengguna berdasarkan token yang diberikan.",
+      tags: ["Users"],
+    },
   });
